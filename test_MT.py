@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser()
 # parser.add_argument('--root_path', type=str, default='/home/ext/chenzhihao/Datasets/ISTD_USR/test', help='Name of Experiment')
 # parser.add_argument('--root_path', type=str, default='/home/ext/chenzhihao/Datasets/UCF', help='Name of Experiment')
 # parser.add_argument('--root_path', type=str, default='/home/ext/chenzhihao/Datasets/SBU-shadow/SBU-Test_rename', help='Name of Experiment')
-parser.add_argument('--root_path', type=str, default='/home/ext/chenzhihao/Datasets/manShadow', help='Name of Experiment')
+parser.add_argument('--root_path', type=str, default=r'D:\zhou\deshadow\dataset\imgshadow\ISTD\test', help='Name of Experiment')
 parser.add_argument('--model', type=str,  default='EGNet', help='model_name')
 parser.add_argument('--gpu', type=str,  default='0', help='GPU to use')
 parser.add_argument('--base_lr', type=float,  default=0.005, help='base learning rate')
@@ -39,21 +39,20 @@ os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
 # snapshot_path = "../model_SBU_EGNet_ablation/meanteacher/consistency"+str(FLAGS.consistency)+"/"+FLAGS.epoch_name # meanteacher
 # snapshot_path = '../model_SBU_EGNet/baselineC64_DSS/10.00.005/iter_7000.pth' # multi-tasks
 # test_save_path = '../model_SBU_EGNet_ablation/multi-task/prediction'
-snapshot_path = '../model_SBU_EGNet/baselineC64_DSS_unlabelcons/repeat16_edge10.0lr0.005consistency1.0subitizing5.0/iter_10000.pth'
+snapshot_path = './model/iter_10000.pth'
 # snapshot_path = "../model_ISTD_EGNet/salience/iter_3000.pth"
-test_save_path = '../model_SBU_EGNet_ablation/man_shadow/prediction'
+test_save_path = './results/ISTD/'
 if not os.path.exists(test_save_path):
     os.makedirs(test_save_path)
 print(snapshot_path)
 num_classes = 1
 
-img_list = [os.path.splitext(f)[0] for f in os.listdir(os.path.join(FLAGS.root_path, 'ShadowImages')) if f.endswith('.jpeg')]
-# data_path = [(os.path.join(FLAGS.root_path, 'ShadowImages', img_name + '.jpg'),
-#              os.path.join(FLAGS.root_path, 'ShadowMasks', img_name + '.png'))
-#             for img_name in img_list]
-data_path = [(os.path.join(FLAGS.root_path, 'ShadowImages', img_name + '.jpeg'),
-             '****')
+img_list = [os.path.splitext(f)[0] for f in os.listdir(os.path.join(FLAGS.root_path, 'test_A')) if f.endswith('.png')]
+data_path = [(os.path.join(FLAGS.root_path, 'test_A', img_name + '.png'),
+             os.path.join(FLAGS.root_path, 'test_B', img_name + '.png'))
             for img_name in img_list]
+# data_path = [(os.path.join(FLAGS.root_path, 'test_B', img_name + '.png'))
+#             for img_name in img_list]
 
 
 def test_calculate_metric():
@@ -63,7 +62,7 @@ def test_calculate_metric():
     net.eval()
 
     avg_metric = test_all_case(net, data_path, num_classes=num_classes,
-                               save_result=False, test_save_path=test_save_path, trans_scale=FLAGS.scale)
+                               save_result=True, test_save_path=test_save_path, trans_scale=FLAGS.scale)
 
     return avg_metric
 
